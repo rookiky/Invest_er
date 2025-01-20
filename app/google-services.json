@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "972113248670",
+    "project_id": "invest-46eea",
+    "storage_bucket": "invest-46eea.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:972113248670:android:f984dac0f802f00a06968f",
+        "android_client_info": {
+          "package_name": "com.example.invest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCe5IDBAG-sIDaJRgS6iutW6xQR4okWATc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,6 +1,7 @@
 package com.example.invest.utils
 
 import com.example.invest.data.FounderProfile
+import com.example.invest.data.Project
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -25,6 +26,8 @@ fun fetchFounders(onFoundersFetched: (List<FounderProfile>) -> Unit) {
         }
     })
 }
+
+
 
 fun likeFounderProfile(founderId: String) {
     val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
@@ -52,3 +55,5 @@ fun fetchAccountType(userId: String, onResult: (String) -> Unit) {
         onResult("Unknown")
     }
 }
+
+

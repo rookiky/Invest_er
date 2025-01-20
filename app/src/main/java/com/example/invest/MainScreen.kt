@@ -17,6 +17,8 @@ import com.example.invest.InvestorProfileScreen
 
 import com.example.invest.homeScreen.InvestorHomeScreen
 import com.example.invest.MessagesScreen
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun MainScreen(accountType: String) {
@@ -25,6 +27,7 @@ fun MainScreen(accountType: String) {
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) }
     ) { innerPadding ->
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
         NavHost(
             navController = navController,
             startDestination = "home",
@@ -40,12 +43,14 @@ fun MainScreen(accountType: String) {
                 }
             }
             composable("profile") {
-                if (accountType == "Founder") {
-                    FounderProfileScreen()
-                } else if(accountType == "Investor") {
-                    InvestorProfileScreen()
-                } else {
-                    MessagesScreen()
+                if (userId != null) {
+                    if (accountType == "Founder") {
+                        FounderProfileScreen(founderId = userId)
+                    } else if(accountType == "Investor") {
+                        InvestorProfileScreen()
+                    } else {
+                        MessagesScreen()
+                    }
                 }
             }
             composable("favorites") { FavoritesScreen() }

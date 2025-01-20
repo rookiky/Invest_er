@@ -77,7 +77,15 @@ class FounderProfileViewModel : ViewModel() {
     ) {
         val database = FirebaseDatabase.getInstance()
         val projectRef = database.getReference("Projects").push()
-        val projectId = projectRef.key ?: return
+        val projectId = projectRef.key ?: run {
+            onFailure("Failed to generate project ID")
+            return
+        }
+
+        val founderId = FirebaseAuth.getInstance().currentUser?.uid ?: run {
+            onFailure("User is not authenticated")
+            return
+        }
 
         val project = Project(
             id = projectId,
@@ -87,16 +95,22 @@ class FounderProfileViewModel : ViewModel() {
             createdAt = System.currentTimeMillis()
         )
 
+        // Save the project to the "Projects" node
         projectRef.setValue(project)
             .addOnSuccessListener {
-                // Add project reference to the founder's profile
+                // Link the project to the founder's profile
                 val founderRef = database.getReference("Users/Founders/$founderId/projects/$projectId")
                 founderRef.setValue(true)
-                    .addOnSuccessListener { onSuccess() }
-                    .addOnFailureListener { onFailure(it.message ?: "Failed to update founder profile") }
+                    .addOnSuccessListener {
+                        onSuccess()
+                    }
+                    .addOnFailureListener { error ->
+                        onFailure("Failed to associate project with founder: ${error.message}")
+                    }
             }
-            .addOnFailureListener {
-                onFailure(it.message ?: "Failed to save project")
+            .addOnFailureListener { error ->
+                onFailure("Failed to save project: ${error.message}")
             }
     }
+
 }

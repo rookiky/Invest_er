@@ -1,4 +1,4 @@
-package com.example.invest
+package com.example.invest.projectScreen
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -13,18 +13,14 @@ import com.example.invest.data.Project
 import com.example.invest.viewModel.FounderProfileViewModel
 
 @Composable
-fun FounderProfileScreen(
+fun FounderProjectScreen(
     founderId: String,
     viewModel: FounderProfileViewModel = viewModel()
 ) {
-    val context = LocalContext.current
     val projects = remember { mutableStateListOf<Project>() }
+    val context = LocalContext.current
 
-    var name by remember { mutableStateOf("") }
-    var projectDescription by remember { mutableStateOf("") }
-    var profileImage by remember { mutableStateOf("") }
-
-    // Fetch founder's projects
+    // Fetch projects for the founder
     LaunchedEffect(founderId) {
         viewModel.fetchProjectsForFounder(
             founderId = founderId,
@@ -44,41 +40,6 @@ fun FounderProfileScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text("Edit Profile", style = MaterialTheme.typography.headlineMedium)
-        TextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Name") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        TextField(
-            value = projectDescription,
-            onValueChange = { projectDescription = it },
-            label = { Text("Project Description") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        TextField(
-            value = profileImage,
-            onValueChange = { profileImage = it },
-            label = { Text("Profile Image URL") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Button(
-            onClick = {
-                viewModel.saveFounderProfile(
-                    context = context,
-                    name = name,
-                    projectDescription = projectDescription,
-                    profileImage = profileImage
-                )
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Save Profile")
-        }
-
-        Divider(thickness = 2.dp)
-
         Text("My Projects", style = MaterialTheme.typography.headlineMedium)
 
         if (projects.isEmpty()) {
@@ -101,7 +62,6 @@ fun FounderProfileScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Section for adding new projects
         var newProjectName by remember { mutableStateOf("") }
         var newProjectDescription by remember { mutableStateOf("") }
 
@@ -127,7 +87,6 @@ fun FounderProfileScreen(
                         Toast.makeText(context, "Project saved successfully", Toast.LENGTH_SHORT).show()
                         newProjectName = ""
                         newProjectDescription = ""
-                        // Refresh project list
                         viewModel.fetchProjectsForFounder(
                             founderId = founderId,
                             onResult = { refreshedProjects ->

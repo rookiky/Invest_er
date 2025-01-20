@@ -6,21 +6,17 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.invest.FavoritesScreen
-import com.example.invest.FounderHomeScreen
-import com.example.invest.FounderProfile
+import com.example.invest.homeScreen.FounderHomeScreen
 import com.example.invest.FounderProfileScreen
 import com.example.invest.InvestorProfileScreen
 
-import com.example.invest.InvestorHomeScreen
+import com.example.invest.homeScreen.InvestorHomeScreen
 import com.example.invest.MessagesScreen
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 
 @Composable
 fun MainScreen(accountType: String) {
@@ -46,8 +42,10 @@ fun MainScreen(accountType: String) {
             composable("profile") {
                 if (accountType == "Founder") {
                     FounderProfileScreen()
-                } else {
+                } else if(accountType == "Investor") {
                     InvestorProfileScreen()
+                } else {
+                    MessagesScreen()
                 }
             }
             composable("favorites") { FavoritesScreen() }

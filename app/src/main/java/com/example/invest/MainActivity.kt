@@ -3,6 +3,7 @@ package com.example.invest
 import BottomNavigationBar
 import MainScreen
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.example.invest.ui.theme.InvestTheme
+import com.example.invest.utils.fetchAccountType
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
@@ -31,13 +33,26 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Retrieve account type from intent
-        val accountType = intent.getStringExtra("accountType") ?: "Unknown"
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            Log.d("userId Connected", userId)
+        }
 
+        if (userId != null) {
+            fetchAccountType(userId) { accountType ->
+                Log.d("AccountType", accountType)
+                setContent {
+                    InvestTheme {
+                        MainScreen(accountType = accountType)
+                    }
+                }
+            }
+        } else {
 
-        setContent {
-            InvestTheme {
-                MainScreen(accountType = accountType)
+            setContent {
+                InvestTheme {
+                    MainScreen(accountType = "Unknown")
+                }
             }
         }
     }

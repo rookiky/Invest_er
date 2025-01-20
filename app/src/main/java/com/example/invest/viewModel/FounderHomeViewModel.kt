@@ -1,19 +1,14 @@
-package com.example.invest
+package com.example.invest.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.example.invest.data.InvestorProfile
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-data class InvestorProfile(
-    val id: String,
-    val name: String,
-    val description: String,
-    val investmentBudget: String
-)
 
-class FounderViewModel : ViewModel() {
+class FounderHomeViewModel : ViewModel() {
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
 
     private val _investors = mutableStateListOf(

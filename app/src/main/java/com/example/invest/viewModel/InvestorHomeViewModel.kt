@@ -1,8 +1,8 @@
-package com.example.invest
+package com.example.invest.viewModel
 
 import androidx.lifecycle.ViewModel
-import com.example.invest.FounderProfile
-import com.example.invest.fetchFounders
+import com.example.invest.data.FounderProfile
+import com.example.invest.utils.fetchFounders
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.flow.MutableStateFlow

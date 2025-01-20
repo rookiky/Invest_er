@@ -12,6 +12,7 @@ class FounderHomeViewModel : ViewModel() {
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
 
     private val _investors = mutableStateListOf(
+        //Todo take off those fuckers
         InvestorProfile("1", "Alice", "Building a green tech startup.", "500000"),
         InvestorProfile("2", "Bob", "Creating an AI platform.", "500000"),
         InvestorProfile("3", "Charlie", "Innovating in e-commerce.", "500000000")

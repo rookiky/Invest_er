@@ -1,5 +1,6 @@
 [versions]
 accompanistPager = "0.29.1-alpha"
+accompanistPagerVersion = "0.32.0"
 agp = "8.8.0"
 firebaseAppcheckSafetynet = "16.1.2"
 firebaseAuth = "23.1.0"
@@ -7,6 +8,7 @@ firebaseBom = "33.8.0"
 firebaseCore = "21.1.1"
 firebaseDatabase = "21.0.0"
 firebaseStorage = "21.0.1"
+foundation = "1.7.6"
 googleServices = "4.4.2"
 kotlin = "2.0.0"
 coreKtx = "1.10.1"
@@ -19,7 +21,9 @@ composeBom = "2024.04.01"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
+accompanist-pager-v0320 = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPagerVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "foundation" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-appcheck-safetynet = { module = "com.google.firebase:firebase-appcheck-safetynet", version.ref = "firebaseAppcheckSafetynet" }
 firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuth" }

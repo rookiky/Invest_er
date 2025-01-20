@@ -27,7 +27,7 @@ fun FounderProfileScreen(
     // Fetch founder's projects
     LaunchedEffect(founderId) {
         viewModel.fetchProjectsForFounder(
-            founderId = founderId,
+            userId = founderId,
             onResult = { fetchedProjects ->
                 projects.clear()
                 projects.addAll(fetchedProjects)
@@ -129,7 +129,7 @@ fun FounderProfileScreen(
                         newProjectDescription = ""
                         // Refresh project list
                         viewModel.fetchProjectsForFounder(
-                            founderId = founderId,
+                            userId = founderId,
                             onResult = { refreshedProjects ->
                                 projects.clear()
                                 projects.addAll(refreshedProjects)

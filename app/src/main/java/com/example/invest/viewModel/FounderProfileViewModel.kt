@@ -36,12 +36,12 @@ class FounderProfileViewModel : ViewModel() {
     }
 
     fun fetchProjectsForFounder(
-        founderId: String,
+        userId: String,
         onResult: (List<Project>) -> Unit,
         onFailure: (String) -> Unit
     ) {
         val database = FirebaseDatabase.getInstance()
-        val founderProjectsRef = database.getReference("Users/Founders/$founderId/projects")
+        val founderProjectsRef = database.getReference("Users/$userId/projects")
 
         founderProjectsRef.get()
             .addOnSuccessListener { snapshot ->
@@ -95,11 +95,10 @@ class FounderProfileViewModel : ViewModel() {
             createdAt = System.currentTimeMillis()
         )
 
-        // Save the project to the "Projects" node
         projectRef.setValue(project)
             .addOnSuccessListener {
-                // Link the project to the founder's profile
-                val founderRef = database.getReference("Users/Founders/$founderId/projects/$projectId")
+
+                val founderRef = database.getReference("Users/$founderId/projects/$projectId")
                 founderRef.setValue(true)
                     .addOnSuccessListener {
                         onSuccess()

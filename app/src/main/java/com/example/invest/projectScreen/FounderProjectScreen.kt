@@ -20,10 +20,9 @@ fun FounderProjectScreen(
     val projects = remember { mutableStateListOf<Project>() }
     val context = LocalContext.current
 
-    // Fetch projects for the founder
     LaunchedEffect(founderId) {
         viewModel.fetchProjectsForFounder(
-            founderId = founderId,
+            userId = founderId,
             onResult = { fetchedProjects ->
                 projects.clear()
                 projects.addAll(fetchedProjects)
@@ -88,7 +87,7 @@ fun FounderProjectScreen(
                         newProjectName = ""
                         newProjectDescription = ""
                         viewModel.fetchProjectsForFounder(
-                            founderId = founderId,
+                            userId = founderId,
                             onResult = { refreshedProjects ->
                                 projects.clear()
                                 projects.addAll(refreshedProjects)

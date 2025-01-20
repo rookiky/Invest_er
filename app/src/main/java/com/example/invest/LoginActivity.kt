@@ -56,12 +56,6 @@ class LoginActivity : ComponentActivity() {
 
         mAuth?.signInWithEmailAndPassword(email, password)?.addOnCompleteListener(this) { task ->
 
-            val currentUser = mAuth?.currentUser
-            if (currentUser != null) {
-                Log.d("LoginDebug", "User is logged in: ${currentUser.email}")
-            } else {
-                Log.e("LoginDebug", "User login failed")
-            }
             if (task.isSuccessful) {
                 val userId = mAuth?.currentUser!!.uid
                 val currentUserDb = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
@@ -73,7 +67,7 @@ class LoginActivity : ComponentActivity() {
                         val profileType = snapshot.child("profileType").value.toString()
                         val profileImageUrl = snapshot.child("profileImageUrl").value.toString()
 
-                        val intent = Intent(this, ProfileActivity::class.java).apply {
+                        val intent = Intent(this, MainActivity::class.java).apply {
                             putExtra("name", name)
                             putExtra("gender", gender)
                             putExtra("profileType", profileType)

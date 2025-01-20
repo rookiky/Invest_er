@@ -42,7 +42,7 @@ android {
 
 dependencies {
 
-
+    implementation (libs.accompanist.pager)
     implementation(libs.google.services)
     implementation("androidx.navigation:navigation-compose:2.8.5")
     implementation(libs.firebase.bom)

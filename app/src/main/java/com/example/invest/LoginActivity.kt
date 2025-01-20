@@ -12,6 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.invest.ui.theme.InvestTheme
 import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 
 class LoginActivity : ComponentActivity() {
     private var mAuth: FirebaseAuth? = null
@@ -47,6 +51,10 @@ class LoginActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(onLoginClick: (String, String) -> Unit, onRegisterClick: () -> Unit) {
+
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background // Black background from theme
@@ -56,49 +64,81 @@ fun LoginScreen(onLoginClick: (String, String) -> Unit, onRegisterClick: () -> U
                 .fillMaxSize()
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center
-        ) {
-            TextField(
-                value = "",
-                onValueChange = {},
-                label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = TextFieldDefaults.textFieldColors(
-
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                    unfocusedIndicatorColor = MaterialTheme.colorScheme.secondary
+        )   {
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_logo),
+                contentDescription = "App Logo",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
                 )
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            TextField(
-                value = "",
-                onValueChange = {},
-                label = { Text("Password") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                    unfocusedIndicatorColor = MaterialTheme.colorScheme.secondary
-                )
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = { onLoginClick("email", "password") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.onSurface,
-
-            ),
-            ) {
-                Text("Login", color = MaterialTheme.colorScheme.onBackground)
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            TextButton(
-                onClick = onRegisterClick,
+            Spacer(modifier = Modifier.height(25.dp))
+            Box(
+                contentAlignment = androidx.compose.ui.Alignment.Center, // Centers content in the Box
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Don't have an account? Sign Up", color = MaterialTheme.colorScheme.onBackground)
+                Text(
+
+                    text = "Welcome",
+                    style = MaterialTheme.typography.headlineLarge, // Use large predefined typography
+                    color = MaterialTheme.colorScheme.tertiary // Adjust color for contrast
+                )
+            }
+
+            Box(
+                contentAlignment = androidx.compose.ui.Alignment.Center, // Centers content in the Box
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+
+                    text = "A Platform linking founders and investors",
+                    style = MaterialTheme.typography.titleMedium, // Use large predefined typography
+                    color = MaterialTheme.colorScheme.onBackground // Adjust color for contrast
+                )
+            }
+
+
+            Spacer(modifier = Modifier.height(100.dp))
+            TextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.textFieldColors(
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        containerColor = MaterialTheme.colorScheme.onSurface,
+                        focusedIndicatorColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedIndicatorColor = MaterialTheme.colorScheme.onBackground
+                    )
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                TextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+
+                )
+                Spacer(modifier = Modifier.height(18.dp))
+                Button(
+                    onClick = { onLoginClick("email", "password") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.onSurface,
+
+                        ),
+                ) {
+                    Text("Login", color = MaterialTheme.colorScheme.onBackground)
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                TextButton(
+                    onClick = onRegisterClick,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Don't have an account? Sign Up", color = MaterialTheme.colorScheme.onBackground)
+                }
             }
         }
-    }
+
 }

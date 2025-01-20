@@ -25,7 +25,7 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
     primary = Purple40,
     secondary = PurpleGrey40,
-    tertiary = Pink40,
+    tertiary = White,
     background = Color.Black, // Set background to black
     surface = Color.Black,    // Set surface to black
     onBackground = Color.White, // Text color on black background
@@ -53,6 +53,7 @@ fun InvestTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = content,
+
     )
 }

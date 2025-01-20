@@ -5,12 +5,14 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.invest.ui.theme.InvestTheme
@@ -27,10 +29,11 @@ class RegistrationActivity : ComponentActivity() {
 
         setContent {
             InvestTheme {
-                RegistrationScreen { email, password, name, sex ->
+                RegistrationScreen ({ email, password, name, sex ->
                     registerUser(email, password, name, sex)
-                }
-            }
+                },
+                onLoginClick = { startActivity(Intent(this, LoginActivity::class.java)) }
+                )}
         }
     }
 
@@ -54,8 +57,9 @@ class RegistrationActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegistrationScreen(onRegisterClick: (String, String, String, String) -> Unit) {
+fun RegistrationScreen(onRegisterClick: (String, String, String, String) -> Unit, onLoginClick: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
@@ -75,34 +79,75 @@ fun RegistrationScreen(onRegisterClick: (String, String, String, String) -> Unit
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center
         ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_logo),
+                contentDescription = "App Logo",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Box(
+                contentAlignment = androidx.compose.ui.Alignment.Center, // Centers content in the Box
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+
+                    text = "Welcome back!",
+                    style = MaterialTheme.typography.titleLarge, // Use large predefined typography
+                    color = MaterialTheme.colorScheme.tertiary // Adjust color for contrast
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
             TextField(
                 value = name,
                 onValueChange = { name = it },
                 label = { Text("Name") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.textFieldColors(
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    containerColor = MaterialTheme.colorScheme.onSurface,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onBackground
+                )
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             TextField(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("Email") },
                 modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                colors = TextFieldDefaults.textFieldColors(
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    containerColor = MaterialTheme.colorScheme.onSurface,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onBackground
+                )
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             TextField(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Password") },
                 modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                colors = TextFieldDefaults.textFieldColors(
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        containerColor = MaterialTheme.colorScheme.onSurface,
+                        focusedIndicatorColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedIndicatorColor = MaterialTheme.colorScheme.onBackground
+            )
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Text("Select Gender:", style = MaterialTheme.typography.titleMedium)
             genders.forEach { gender ->
@@ -114,7 +159,7 @@ fun RegistrationScreen(onRegisterClick: (String, String, String, String) -> Unit
                         selected = selectedGender == gender,
                         onClick = { selectedGender = gender }
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
                     Text(text = gender)
                 }
             }
@@ -129,10 +174,21 @@ fun RegistrationScreen(onRegisterClick: (String, String, String, String) -> Unit
                         Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
                     }
                 },
+                modifier = Modifier.fillMaxWidth(),colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.onSurface,
+
+                    ),
+            ) {
+                Text("Login", color = MaterialTheme.colorScheme.onBackground)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            TextButton(
+                onClick = onLoginClick,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Register")
+                Text("Already have an account? Log In", color = MaterialTheme.colorScheme.onBackground)
             }
+
         }
     }
 

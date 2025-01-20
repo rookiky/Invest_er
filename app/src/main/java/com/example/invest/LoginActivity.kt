@@ -106,6 +106,7 @@ fun LoginScreen(onLoginClick: (String, String) -> Unit, onRegisterClick: () -> U
                     modifier = Modifier.fillMaxWidth(),
                     colors = TextFieldDefaults.textFieldColors(
                         focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
                         containerColor = MaterialTheme.colorScheme.onSurface,
                         focusedIndicatorColor = MaterialTheme.colorScheme.onBackground,
                         unfocusedIndicatorColor = MaterialTheme.colorScheme.onBackground
@@ -118,6 +119,13 @@ fun LoginScreen(onLoginClick: (String, String) -> Unit, onRegisterClick: () -> U
                     label = { Text("Password") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    colors = TextFieldDefaults.textFieldColors(
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        containerColor = MaterialTheme.colorScheme.onSurface,
+                        focusedIndicatorColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedIndicatorColor = MaterialTheme.colorScheme.onBackground
+                    )
 
                 )
                 Spacer(modifier = Modifier.height(18.dp))

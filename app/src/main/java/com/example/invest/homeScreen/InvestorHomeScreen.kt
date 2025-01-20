@@ -19,7 +19,7 @@ import com.example.invest.viewModel.InvestorHomeViewModel
 @Composable
 fun InvestorHomeScreen(viewModel: InvestorHomeViewModel = viewModel()) {
     val projects = viewModel.projects.collectAsState().value
-    var currentIndex by remember { mutableStateOf(0) }
+    var currentIndex by remember { mutableIntStateOf(0) }
 
     if (projects.isEmpty()) {
         Box(

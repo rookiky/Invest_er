@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import com.example.invest.data.FounderProfile
 import com.example.invest.data.Project
 import com.example.invest.utils.fetchFounders
-import com.example.invest.utils.fetchProjects
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,33 +43,42 @@ class InvestorHomeViewModel : ViewModel() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val database = FirebaseDatabase.getInstance()
 
-        // Update the "likedProjects" for the investor
+
         val likedProjectsRef = database.getReference("Users/$userId/likedProjects")
         likedProjectsRef.push().setValue(projectId).addOnSuccessListener {
             println("Project $projectId liked successfully.")
 
-            // Alert the founder of the project
-            alertFounder(projectId, userId)
+            //Todo alert Founder
+            //alertFounder(projectId, userId)
+
         }.addOnFailureListener {
             println("Failed to like project: ${it.message}")
         }
-    }
 
-    private fun alertFounder(projectId: String, investorId: String) {
+        val likedByRef = database.getReference("Projects/$projectId/likedBy")
+        likedByRef.child(userId).setValue(true).addOnSuccessListener {
+            println("Project $projectId liked successfully by $userId.")
+        }.addOnFailureListener { error ->
+            println("Failed to update likedBy for project $projectId: ${error.message}")
+        }
+
+   }
+
+
+
+    /*private fun alertFounder(projectId: String, investorId: String) {
         val database = FirebaseDatabase.getInstance()
 
-        // Fetch project details to get the founder ID
         val projectRef = database.getReference("Projects/$projectId")
         projectRef.get().addOnSuccessListener { projectSnapshot ->
-            val founderId = projectSnapshot.child("founderId").value as? String ?: return@addOnSuccessListener
+            val userId = projectSnapshot.child("userId").value as? String ?: return@addOnSuccessListener
 
-            // Add the investor's profile to the "likedBy" list of the founder
-            val likedByRef = database.getReference("Users/Founders/$founderId/likedBy/$investorId")
+            val likedByRef = database.getReference("Users/$userId/likedBy/$investorId")
             likedByRef.setValue(true).addOnSuccessListener {
-                println("Founder $founderId alerted successfully.")
+                println(userId)
+                println("Founder $userId alerted successfully.")
 
-                // Optionally, send a notification to the founder
-                sendNotificationToFounder(founderId, investorId)
+                sendNotificationToFounder(userId, investorId)
             }.addOnFailureListener {
                 println("Failed to alert founder: ${it.message}")
             }
@@ -80,11 +88,9 @@ class InvestorHomeViewModel : ViewModel() {
     }
 
     private fun sendNotificationToFounder(founderId: String, investorId: String) {
-        // Hypothetical notification logic
         println("Notification sent to Founder $founderId about Investor $investorId liking the project.")
-        // Integrate a notification service like Firebase Cloud Messaging (FCM) for real notifications
     }
-
+*/
     fun dislikeProject(projectId: String) {
         updateDatabaseWithDecision(projectId, "dislikedProjects")
     }

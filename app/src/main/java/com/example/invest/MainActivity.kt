@@ -9,13 +9,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.invest.ui.theme.InvestTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MaterialTheme {
+            InvestTheme {
                 MainScreen(
                     onLoginClick = { startActivity(Intent(this, LoginActivity::class.java)) },
                     onRegisterClick = { startActivity(Intent(this, RegistrationActivity::class.java)) }

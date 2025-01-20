@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.invest.ui.theme.InvestTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
@@ -25,7 +26,7 @@ class RegistrationActivity : ComponentActivity() {
         mAuth = FirebaseAuth.getInstance()
 
         setContent {
-            MaterialTheme {
+            InvestTheme {
                 RegistrationScreen { email, password, name, sex ->
                     registerUser(email, password, name, sex)
                 }

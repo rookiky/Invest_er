@@ -29,15 +29,15 @@ class RegistrationActivity : ComponentActivity() {
 
         setContent {
             InvestTheme {
-                RegistrationScreen ({ email, password, name, sex ->
-                    registerUser(email, password, name, sex)
+                RegistrationScreen ({ email, password, name, sex, profileType ->
+                    registerUser(email, password, name, sex, profileType)
                 },
                 onLoginClick = { startActivity(Intent(this, LoginActivity::class.java)) }
                 )}
         }
     }
 
-    private fun registerUser(email: String, password: String, name: String, sex: String) {
+    private fun registerUser(email: String, password: String, name: String, sex: String, profileType: String) {
         mAuth?.createUserWithEmailAndPassword(email, password)?.addOnCompleteListener(this) { task ->
             if (!task.isSuccessful) {
                 Toast.makeText(this, "Sign up error", Toast.LENGTH_SHORT).show()
@@ -47,6 +47,7 @@ class RegistrationActivity : ComponentActivity() {
                 val userInfo = mapOf(
                     "name" to name,
                     "sex" to sex,
+                    "profileType" to profileType,
                     "profileImageUrl" to "default"
                 )
                 currentUserDb.updateChildren(userInfo)
@@ -59,14 +60,14 @@ class RegistrationActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegistrationScreen(onRegisterClick: (String, String, String, String) -> Unit, onLoginClick: () -> Unit) {
+fun RegistrationScreen(onRegisterClick: (String, String, String, String, String) -> Unit, onLoginClick: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var selectedGender by remember { mutableStateOf("") }
     val genders = listOf("Male", "Female", "Other")
-
-    // Get the current context for displaying the Toast
+    var selectedProfileType by remember { mutableStateOf("") }
+    val profileTypes = listOf("Investor", "Founder")
     val context = LocalContext.current
 
     Surface(
@@ -164,12 +165,29 @@ fun RegistrationScreen(onRegisterClick: (String, String, String, String) -> Unit
                 }
             }
 
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text("Select User Type:", style = MaterialTheme.typography.titleMedium)
+            profileTypes.forEach { profileType ->
+                Row(
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    RadioButton(
+                        selected = selectedProfileType == profileType,
+                        onClick = { selectedProfileType = profileType }
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(text = profileType)
+                }
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = {
                     if (email.isNotEmpty() && password.isNotEmpty() && name.isNotEmpty() && selectedGender.isNotEmpty()) {
-                        onRegisterClick(email, password, name, selectedGender)
+                        onRegisterClick(email, password, name, selectedGender, selectedProfileType)
                     } else {
                         Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
                     }
@@ -179,7 +197,7 @@ fun RegistrationScreen(onRegisterClick: (String, String, String, String) -> Unit
 
                     ),
             ) {
-                Text("Login", color = MaterialTheme.colorScheme.onBackground)
+                Text("Register", color = MaterialTheme.colorScheme.onBackground)
             }
             Spacer(modifier = Modifier.height(16.dp))
             TextButton(

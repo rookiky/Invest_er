@@ -2,6 +2,7 @@ package com.example.invest
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,6 +17,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
+import com.google.firebase.database.FirebaseDatabase
 
 class LoginActivity : ComponentActivity() {
     private var mAuth: FirebaseAuth? = null
@@ -36,13 +38,59 @@ class LoginActivity : ComponentActivity() {
         }
     }
 
+    private fun isValidEmail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
     private fun signInUser(email: String, password: String) {
+        if (!isValidEmail(email)) {
+            Toast.makeText(this, "Invalid email address format", Toast.LENGTH_SHORT).show()
+            Log.d("Login debug", email)
+            return
+        }
+
+        if (password.isEmpty()) {
+            Toast.makeText(this, "Password cannot be empty", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         mAuth?.signInWithEmailAndPassword(email, password)?.addOnCompleteListener(this) { task ->
-            if (task.isSuccessful) {
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
+
+            val currentUser = mAuth?.currentUser
+            if (currentUser != null) {
+                Log.d("LoginDebug", "User is logged in: ${currentUser.email}")
             } else {
-                Toast.makeText(this, "Sign in error", Toast.LENGTH_SHORT).show()
+                Log.e("LoginDebug", "User login failed")
+            }
+            if (task.isSuccessful) {
+                val userId = mAuth?.currentUser!!.uid
+                val currentUserDb = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
+
+                currentUserDb.get().addOnSuccessListener { snapshot ->
+                    if (snapshot.exists()) {
+                        val name = snapshot.child("name").value.toString()
+                        val gender = snapshot.child("sex").value.toString()
+                        val profileType = snapshot.child("profileType").value.toString()
+                        val profileImageUrl = snapshot.child("profileImageUrl").value.toString()
+
+                        val intent = Intent(this, ProfileActivity::class.java).apply {
+                            putExtra("name", name)
+                            putExtra("gender", gender)
+                            putExtra("profileType", profileType)
+                            //putExtra("profileImageUrl", profileImageUrl) // If you have a profile image URL
+                        }
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        Toast.makeText(this, "User data not found", Toast.LENGTH_SHORT).show()
+                    }
+                }.addOnFailureListener {
+                    Toast.makeText(this, "Failed to retrieve user data", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                val error = task.exception?.message ?: "Unknown error"
+                Log.e("LoginDebug", "Login failed: $error")
+                Toast.makeText(this, "Login failed: $error", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -130,7 +178,7 @@ fun LoginScreen(onLoginClick: (String, String) -> Unit, onRegisterClick: () -> U
                 )
                 Spacer(modifier = Modifier.height(18.dp))
                 Button(
-                    onClick = { onLoginClick("email", "password") },
+                    onClick = { onLoginClick(email, password) },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.onSurface,

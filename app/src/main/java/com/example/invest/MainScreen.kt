@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun MainScreen(accountType: String) {
     val navController = rememberNavController()
+
         Scaffold(
             bottomBar = { BottomNavigationBar(navController, accountType) }
         ) { innerPadding ->

@@ -19,6 +19,7 @@ fun ChatRoomScreen(chatId: String, viewModel: ChatRoomViewModel = viewModel()) {
     var messageContent by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Text(text = chatId, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
         Box(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())) {
             Column {
                 for (message in messages) {

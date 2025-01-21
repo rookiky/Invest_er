@@ -1,7 +1,7 @@
 package com.example.invest.data
 
 data class InvestorProfile(
-    val id: String = "",
+    var id: String = "",
     val name: String = "",
     val description: String = "",
     val investmentBudget: String = "",

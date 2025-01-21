@@ -50,8 +50,9 @@ class FounderHomeViewModel : ViewModel() {
         val investorRef = database.getReference("Users/$investorId")
 
         investorRef.get().addOnSuccessListener { snapshot ->
-            val investor = snapshot.getValue(InvestorProfile::class.java)
+            var investor = snapshot.getValue(InvestorProfile::class.java)
             if (investor != null) {
+                investor.id = investorId
                 onResult(investor)
             }
         }.addOnFailureListener {
@@ -62,7 +63,7 @@ class FounderHomeViewModel : ViewModel() {
     fun likeInvestor(investorId: String, onChatCreated: (String?) -> Unit) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val database = FirebaseDatabase.getInstance()
-
+        println("Investor ID passed to likeInvestor: $investorId")
         val likedProfilesRef = database.getReference("Users/$userId/likedProfiles")
         likedProfilesRef.push().setValue(investorId).addOnSuccessListener {
             println("Investor $investorId liked successfully.")

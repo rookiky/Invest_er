@@ -36,6 +36,8 @@ fun FounderHomeScreen(viewModel: FounderHomeViewModel = viewModel()) {
             },
             onSwipeRight = {
                 viewModel.likeInvestor(currentInvestor.id) { chatRoomId ->
+                    println("current investor: $currentInvestor")
+                    println("currentInvestorId: ${currentInvestor.id}")
                     println("Chat room created with ID: $chatRoomId")
                 }
                 currentIndex++

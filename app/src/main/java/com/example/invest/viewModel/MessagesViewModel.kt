@@ -18,7 +18,7 @@ class MessagesViewModel : ViewModel() {
     private fun fetchChatRooms() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val database = FirebaseDatabase.getInstance()
-        val chatRoomsRef = database.getReference("Users/$userId/chats")
+        val chatRoomsRef = database.getReference("Users/$userId/chatRooms")
 
         chatRoomsRef.get()
             .addOnSuccessListener { snapshot ->

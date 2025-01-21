@@ -30,10 +30,22 @@ class InvestorHomeViewModel : ViewModel() {
     ) {
         val database = FirebaseDatabase.getInstance()
         val founderProjectsRef = database.getReference("Projects")
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
         founderProjectsRef.get()
             .addOnSuccessListener { snapshot ->
-                val projects = snapshot.children.mapNotNull { it.getValue(Project::class.java) }
+                //Todo change back if its not working
+                //val projects = snapshot.children.mapNotNull { it.getValue(Project::class.java) }
+                //onResult(projects)
+                val projects = snapshot.children.mapNotNull { data ->
+                    val project = data.getValue(Project::class.java)
+                    // Only include projects not already liked by the current user
+                    if (project != null && project.likedBy?.containsKey(userId) != true) {
+                        project
+                    } else {
+                        null
+                    }
+                }
                 onResult(projects)
             }
             .addOnFailureListener { onFailure(it.message ?: "Failed to fetch projects") }
@@ -63,6 +75,21 @@ class InvestorHomeViewModel : ViewModel() {
         }
 
    }
+
+    fun addFavoriteProject(projectId: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val database = FirebaseDatabase.getInstance()
+
+
+        val favoriteProjectRef = database.getReference("Users/$userId/favoriteProjects")
+        favoriteProjectRef.push().setValue(projectId).addOnSuccessListener {
+            println("Project $projectId added in Favorites.")
+
+        }.addOnFailureListener {
+            println("Failed to like project: ${it.message}")
+        }
+    }
+
 
 
 

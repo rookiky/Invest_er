@@ -48,11 +48,15 @@ fun InvestorHomeScreen(viewModel: InvestorHomeViewModel = viewModel()) {
                 viewModel.likeProject(currentProject.id)
                 currentIndex++
             },
+            onFavorite = {
+                projectId -> viewModel.addFavoriteProject(projectId)
+            },
             onLike = {
                 projectId -> viewModel.likeProject(projectId)
-            },
+                currentIndex++ },
             onDislike = {
                 projectId -> viewModel.dislikeProject(projectId)
+                currentIndex++
             }
         )
     }
@@ -61,6 +65,7 @@ fun InvestorHomeScreen(viewModel: InvestorHomeViewModel = viewModel()) {
 @Composable
 fun ProjectCard(
     project: Project,
+    onFavorite: (String) -> Unit,
     onLike: (String) -> Unit,
     onDislike: (String) -> Unit
 ) {
@@ -84,6 +89,12 @@ fun ProjectCard(
                     Text("Dislike")
                 }
                 Button(
+                    onClick = { onFavorite(project.id) },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onBackground)
+                ) {
+                    Text("Favorite")
+                }
+                Button(
                     onClick = { onLike(project.id) },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
@@ -99,6 +110,7 @@ fun SwipeableBox(
     project: Project,
     onLike: (String) -> Unit,
     onDislike: (String) -> Unit,
+    onFavorite: (String) -> Unit,
     onSwipeLeft: () -> Unit,
     onSwipeRight: () -> Unit
 ) {
@@ -117,7 +129,8 @@ fun SwipeableBox(
         ProjectCard(
             project,
             onLike = {onLike(project.id)},
-            onDislike = {onDislike(project.id)}
+            onDislike = {onDislike(project.id)},
+            onFavorite = {onFavorite(project.id)}
         )
     }
 }

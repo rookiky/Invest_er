@@ -41,7 +41,7 @@ class ChatRoomViewModel(private val chatId: String) : ViewModel() {
         val message = Message(
             messageId = messagesRef.key ?: "",
             senderId = senderId,
-            receiverId = "", // This can be omitted or dynamically set if required
+            receiverId = "",
             content = content,
             timestamp = System.currentTimeMillis()
         )

@@ -19,31 +19,42 @@ class FounderHomeViewModel : ViewModel() {
     private fun fetchInvestorsWhoLikedProjects() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val database = FirebaseDatabase.getInstance()
+        val likedProfilesRef = database.getReference("Users/$userId/likedProfiles")
         val projectsRef = database.getReference("Users/$userId/projects")
 
-        projectsRef.get().addOnSuccessListener { projectSnapshot ->
-            val projectIds = projectSnapshot.children.mapNotNull { it.key }
-            val investorsList = mutableListOf<InvestorProfile>()
+        likedProfilesRef.get().addOnSuccessListener { likedProfilesSnapshot ->
+            val likedInvestorIds = likedProfilesSnapshot.children.mapNotNull { it.getValue(String::class.java) }.toSet()
 
-            projectIds.forEach { projectId ->
-                val likedByRef = database.getReference("Projects/$projectId/likedBy")
+            projectsRef.get().addOnSuccessListener { projectSnapshot ->
+                val projectIds = projectSnapshot.children.mapNotNull { it.key }
+                val investorsList = mutableListOf<InvestorProfile>()
 
-                likedByRef.get().addOnSuccessListener { likedBySnapshot ->
-                    likedBySnapshot.children.forEach { investorSnapshot ->
-                        val investorId = investorSnapshot.key ?: return@forEach
-                        fetchInvestorProfile(investorId) { investor ->
-                            investorsList.add(investor)
-                            _investors.value = investorsList
+                projectIds.forEach { projectId ->
+                    val likedByRef = database.getReference("Projects/$projectId/likedBy")
+
+                    likedByRef.get().addOnSuccessListener { likedBySnapshot ->
+                        likedBySnapshot.children.forEach { investorSnapshot ->
+                            val investorId = investorSnapshot.key ?: return@forEach
+
+                            if (!likedInvestorIds.contains(investorId)) {
+                                fetchInvestorProfile(investorId) { investor ->
+                                    investorsList.add(investor)
+                                    _investors.value = investorsList
+                                }
+                            }
                         }
+                    }.addOnFailureListener {
+                        println("Failed to fetch likedBy for project $projectId: ${it.message}")
                     }
-                }.addOnFailureListener {
-                    println("Failed to fetch likedBy for project $projectId: ${it.message}")
                 }
+            }.addOnFailureListener {
+                println("Failed to fetch projects: ${it.message}")
             }
         }.addOnFailureListener {
-            println("Failed to fetch projects: ${it.message}")
+            println("Failed to fetch liked profiles: ${it.message}")
         }
     }
+
 
     private fun fetchInvestorProfile(investorId: String, onResult: (InvestorProfile) -> Unit) {
         val database = FirebaseDatabase.getInstance()

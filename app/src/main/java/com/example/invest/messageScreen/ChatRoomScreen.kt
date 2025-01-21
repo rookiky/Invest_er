@@ -15,14 +15,28 @@ import com.example.invest.viewModel.ChatRoomViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun ChatRoomScreen(chatId: String, viewModel: ChatRoomViewModel = viewModel()) {
+fun ChatRoomScreen(chatId: String) {
+    val factory = remember { ChatRoomViewModelFactory(chatId) }
+    val viewModel: ChatRoomViewModel = viewModel(factory = factory)
+
     val messages = viewModel.messages.collectAsState().value
     var messageContent by remember { mutableStateOf("") }
-    val factory = remember { ChatRoomViewModelFactory(chatId) }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text(text = chatId, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
-        Box(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Chat ID: $chatId",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(8.dp)
+        )
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+        ) {
             Column {
                 for (message in messages) {
                     Text(
@@ -43,8 +57,10 @@ fun ChatRoomScreen(chatId: String, viewModel: ChatRoomViewModel = viewModel()) {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Button(onClick = {
-                viewModel.sendMessage(FirebaseAuth.getInstance().currentUser?.uid ?: "", messageContent)
-                messageContent = ""
+                if (messageContent.isNotBlank()) {
+                    viewModel.sendMessage(messageContent)
+                    messageContent = ""
+                }
             }) {
                 Text("Send")
             }

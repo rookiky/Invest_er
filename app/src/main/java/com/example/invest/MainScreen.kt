@@ -18,8 +18,8 @@ import com.example.invest.homeScreen.FounderHomeScreen
 import com.example.invest.InvestorProfileScreen
 
 import com.example.invest.homeScreen.InvestorHomeScreen
+import com.example.invest.messageScreen.ChatRoomScreen
 
-import com.example.invest.messageScreen.MessageScreen
 import com.example.invest.messageScreen.MessagesScreen
 import com.example.invest.projectScreen.FounderProjectScreen
 import com.google.firebase.auth.FirebaseAuth
@@ -38,9 +38,7 @@ fun MainScreen(accountType: String) {
             ) {
                 composable("home") {
                     if (accountType == "Founder") {
-                        FounderHomeScreen(
-
-                        )
+                        FounderHomeScreen()
                     } else {
                         InvestorHomeScreen() // ViewModel is used internally
                     }
@@ -63,7 +61,7 @@ fun MainScreen(accountType: String) {
                 composable("messages") { MessagesScreen(navController = navController) }
                 composable("messages/{chatId}") { backStackEntry ->
                     val chatId = backStackEntry.arguments?.getString("chatId") ?: ""
-                    MessageScreen(chatId = chatId)
+                    ChatRoomScreen(chatId = chatId)
                 }
             }
     }

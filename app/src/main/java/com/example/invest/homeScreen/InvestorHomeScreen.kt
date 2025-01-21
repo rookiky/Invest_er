@@ -50,6 +50,7 @@ fun InvestorHomeScreen(viewModel: InvestorHomeViewModel = viewModel()) {
             },
             onFavorite = {
                 projectId -> viewModel.addFavoriteProject(projectId)
+                currentIndex++
             },
             onLike = {
                 projectId -> viewModel.likeProject(projectId)

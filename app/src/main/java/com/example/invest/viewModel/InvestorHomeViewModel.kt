@@ -40,7 +40,7 @@ class InvestorHomeViewModel : ViewModel() {
                 val projects = snapshot.children.mapNotNull { data ->
                     val project = data.getValue(Project::class.java)
                     // Only include projects not already liked by the current user
-                    if (project != null && project.likedBy?.containsKey(userId) != true) {
+                    if (project != null && project.likedBy?.containsKey(userId) != true && project.favoriteBy?.containsKey(userId) != true) {
                         project
                     } else {
                         null
@@ -80,18 +80,25 @@ class InvestorHomeViewModel : ViewModel() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val database = FirebaseDatabase.getInstance()
 
-
         val favoriteProjectRef = database.getReference("Users/$userId/favoriteProjects")
         favoriteProjectRef.push().setValue(projectId).addOnSuccessListener {
-            println("Project $projectId added in Favorites.")
+            println("Project $projectId added to Favorites.")
+            val projectFavoriteByRef = database.getReference("Projects/$projectId/favoriteBy")
+            println("rules reference: $projectFavoriteByRef")
+            println("userId: $userId")
+            println("projectId: $projectId")
+            projectFavoriteByRef.child(userId).setValue(true)
+                .addOnSuccessListener {
+                println("Project $projectId marked as favorite by user $userId.")
+            }
+                .addOnFailureListener { error ->
+                println("Failed to update favoriteBy for project $projectId: ${error.message}")
+            }
 
-        }.addOnFailureListener {
-            println("Failed to like project: ${it.message}")
+        }.addOnFailureListener { error ->
+            println("Failed to add project $projectId to Favorites: ${error.message}")
         }
     }
-
-
-
 
     /*private fun alertFounder(projectId: String, investorId: String) {
         val database = FirebaseDatabase.getInstance()

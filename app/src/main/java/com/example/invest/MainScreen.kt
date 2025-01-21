@@ -11,11 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavController
-import com.example.invest.FavoritesScreen
 import com.example.invest.FounderProfileScreen
 import com.example.invest.homeScreen.FounderHomeScreen
 import com.example.invest.InvestorProfileScreen
+import com.example.invest.favoriteScreen.FavoritesScreen
 
 import com.example.invest.homeScreen.InvestorHomeScreen
 import com.example.invest.messageScreen.ChatRoomScreen

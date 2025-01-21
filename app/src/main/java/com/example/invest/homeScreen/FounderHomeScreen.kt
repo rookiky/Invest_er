@@ -20,50 +20,61 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.invest.data.InvestorProfile
 import com.example.invest.viewModel.FounderHomeViewModel
 
 @Composable
-fun FounderHomeScreen(viewModel: FounderHomeViewModel = viewModel()) {
+fun FounderHomeScreen(viewModel: FounderHomeViewModel = viewModel(), navController: NavController) {
     val investors = viewModel.investors.collectAsState().value
-    var currentIndex by remember { mutableIntStateOf(0) }
+    var currentIndex by remember { mutableStateOf(0) }
 
     if (investors.isEmpty()) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("No projects available", style = MaterialTheme.typography.bodyLarge)
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("No investors have liked your projects yet.")
         }
     } else if (currentIndex >= investors.size) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("No more projects to review", style = MaterialTheme.typography.bodyLarge)
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("No more investors to review.")
         }
     } else {
         val currentInvestor = investors[currentIndex]
 
-        SwipeableBox(
+        SwipeableInvestorCard(
             investor = currentInvestor,
             onSwipeLeft = {
-                viewModel.dislikeInvestor(currentInvestor.id)
+                viewModel.rejectInvestor(currentInvestor.id)
                 currentIndex++
             },
             onSwipeRight = {
-                viewModel.likeInvestor(currentInvestor.id)
+                viewModel.likeInvestor(currentInvestor.id) // Calls likeInvestor which starts a chat
                 currentIndex++
+
+                viewModel.startChat(
+                    currentInvestor.id,
+                    investorId = TODO(),
+                    onSuccess = TODO()
+                ) { chatCreated ->
+                    if (chatCreated) {
+                        navController.navigate("messages")
+                    } else {
+                        println("Failed to start chat")
+                    }
+                }
             },
             onLike = {
                     investorId -> viewModel.likeInvestor(investorId)
+
             },
             onDislike = {
-                    investorId -> viewModel.dislikeInvestor(investorId)
+                    investorId -> viewModel.rejectInvestor(investorId)
             }
         )
     }
 }
+
+
+
 
 @Composable
 fun InvestorCard(
@@ -103,7 +114,7 @@ fun InvestorCard(
 }
 
 @Composable
-fun SwipeableBox(
+fun SwipeableInvestorCard(
     investor: InvestorProfile,
     onLike: (String) -> Unit,
     onDislike: (String) -> Unit,

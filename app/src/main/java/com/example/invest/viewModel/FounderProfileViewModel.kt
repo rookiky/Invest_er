@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
 class FounderProfileViewModel : ViewModel() {
+
     fun saveFounderProfile(context: Context, name: String, projectDescription: String, profileImage: String) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val database = FirebaseDatabase.getInstance()

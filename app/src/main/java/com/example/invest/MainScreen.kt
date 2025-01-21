@@ -11,13 +11,16 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavController
 import com.example.invest.FavoritesScreen
 import com.example.invest.FounderProfileScreen
 import com.example.invest.homeScreen.FounderHomeScreen
 import com.example.invest.InvestorProfileScreen
 
 import com.example.invest.homeScreen.InvestorHomeScreen
-import com.example.invest.MessagesScreen
+
+import com.example.invest.messageScreen.MessageScreen
+import com.example.invest.messageScreen.MessagesScreen
 import com.example.invest.projectScreen.FounderProjectScreen
 import com.google.firebase.auth.FirebaseAuth
 
@@ -48,8 +51,6 @@ fun MainScreen(accountType: String) {
                             FounderProfileScreen(founderId = userId)
                         } else if(accountType == "Investor") {
                             InvestorProfileScreen()
-                        } else {
-                            MessagesScreen()
                         }
                     }
                 }
@@ -59,7 +60,11 @@ fun MainScreen(accountType: String) {
                     }
                 }
                 composable("favorites") { FavoritesScreen() }
-                composable("messages") { MessagesScreen() }
+                composable("messages") { MessagesScreen(navController = navController) }
+                composable("messages/{chatId}") { backStackEntry ->
+                    val chatId = backStackEntry.arguments?.getString("chatId") ?: ""
+                    MessageScreen(chatId = chatId)
+                }
             }
     }
 }

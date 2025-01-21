@@ -33,29 +33,102 @@ class FounderHomeViewModel : ViewModel() {
         onFailure: (String) -> Unit
     ) {
         val database = FirebaseDatabase.getInstance()
-        val founderProjectsRef = database.getReference("Users/$userId/likedBy")
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        val founderProjectsRef = database.getReference("Users/$userId/projects")
 
         founderProjectsRef.get()
             .addOnSuccessListener { snapshot ->
-                println(userId)
-                val investors = snapshot.children.mapNotNull { it.getValue(InvestorProfile::class.java) }
-                onResult(investors)
+                val projectIds = snapshot.children.mapNotNull { it.key }
+                val investorsList = mutableListOf<InvestorProfile>()
+
+                projectIds.forEach { projectId ->
+                    val likedByRef = database.getReference("Projects/$projectId/likedBy")
+
+                    likedByRef.get()
+                        .addOnSuccessListener { likedBySnapshot ->
+                            likedBySnapshot.children.forEach { investorSnapshot ->
+                                val investorId = investorSnapshot.key ?: return@forEach
+                                fetchInvestorProfile(investorId) { investor ->
+                                    investorsList.add(investor)
+                                    _investors.value = investorsList
+                                }
+                            }
+                        }
+                        .addOnFailureListener {
+                            println("Failed to fetch likedBy for project $projectId: ${it.message}")
+                        }
+                }
             }
-            .addOnFailureListener { onFailure(it.message ?: "Failed to fetch projects") }
+            .addOnFailureListener {
+                println("Failed to fetch founder's projects: ${it.message}")
+            }
+    }
+
+    private fun fetchInvestorProfile(userId: String, onResult: (InvestorProfile) -> Unit) {
+        val database = FirebaseDatabase.getInstance()
+        val investorRef = database.getReference("Users/$userId")
+
+        investorRef.get()
+            .addOnSuccessListener { snapshot ->
+                val investor = snapshot.getValue(InvestorProfile::class.java)
+                if (investor != null) {
+                    onResult(investor)
+                }
+            }
+            .addOnFailureListener {
+                println("Failed to fetch investor profile: ${it.message}")
+            }
     }
 
     fun likeInvestor(investorId: String) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val database = FirebaseDatabase.getInstance()
 
-        val likedInvestorsRef = database.getReference("Users/$userId/likedProjects")
-        likedInvestorsRef.push().setValue(investorId).addOnSuccessListener {
+        val likedProfilesRef = database.getReference("Users/$userId/likedProfiles")
+        likedProfilesRef.push().setValue(investorId).addOnSuccessListener {
             println("Investor $investorId liked successfully.")
 
-            alertInvestor(investorId, userId)
+            startChat(userId, investorId,
+                onSuccess = { chatId ->
+                    println("Chat started successfully with ID: $chatId")
+                },
+                onFailure = { error ->
+                    println("Failed to start chat: $error")
+                }
+            )
         }.addOnFailureListener {
             println("Failed to like investor: ${it.message}")
         }
+    }
+
+    fun rejectInvestor(investorId: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val database = FirebaseDatabase.getInstance()
+        val rejectedProfilesRef = database.getReference("Users/$userId/rejectedProfiles")
+        rejectedProfilesRef.push().setValue(investorId).addOnSuccessListener {
+            println("Investor $investorId rejected successfully.")
+        }.addOnFailureListener {
+            println("Failed to reject investor: ${it.message}")
+        }
+    }
+
+    fun startChat(founderId: String, investorId: String, onSuccess: (String) -> Unit, onFailure: (String) -> Unit) {
+        val database = FirebaseDatabase.getInstance()
+        val chatId = database.getReference("Chats").push().key ?: return
+
+        val chatData = mapOf(
+            "participants" to mapOf(
+                founderId to true,
+                investorId to true
+            ),
+            "lastMessage" to "",
+            "timestamp" to System.currentTimeMillis()
+        )
+
+        database.getReference("Chats/$chatId").setValue(chatData)
+            .addOnSuccessListener { onSuccess(chatId) }
+            .addOnFailureListener { onFailure(it.message ?: "Failed to start chat") }
     }
 
     private fun alertInvestor(founderId: String, investorId: String) {

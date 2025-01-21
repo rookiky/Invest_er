@@ -24,7 +24,7 @@ class InvestorHomeViewModel : ViewModel() {
         )
     }
 
-    fun fetchProjects(
+    private fun fetchProjects(
         onResult: (List<Project>) -> Unit,
         onFailure: (String) -> Unit
     ) {
@@ -34,12 +34,8 @@ class InvestorHomeViewModel : ViewModel() {
 
         founderProjectsRef.get()
             .addOnSuccessListener { snapshot ->
-                //Todo change back if its not working
-                //val projects = snapshot.children.mapNotNull { it.getValue(Project::class.java) }
-                //onResult(projects)
                 val projects = snapshot.children.mapNotNull { data ->
                     val project = data.getValue(Project::class.java)
-                    // Only include projects not already liked by the current user
                     if (project != null && project.likedBy?.containsKey(userId) != true && project.favoriteBy?.containsKey(userId) != true) {
                         project
                     } else {

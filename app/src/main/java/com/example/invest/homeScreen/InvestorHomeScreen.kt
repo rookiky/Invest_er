@@ -6,12 +6,20 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -86,7 +94,7 @@ fun SwipeableBox(
                 detectHorizontalDragGestures(
                     onHorizontalDrag = { _, dragAmount ->
                         coroutineScope.launch {
-                            offsetX.snapTo(offsetX.value + dragAmount) // Update offset in real-time
+                            offsetX.snapTo(offsetX.value + dragAmount)
                         }
                     },
                     onDragEnd = {
@@ -139,38 +147,68 @@ fun ProjectCard(
             verticalArrangement = Arrangement.SpaceBetween
         ){
                 Column(
-                    modifier = Modifier.weight(1f), // Let the content take up remaining space
+                    modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(project.name, style = MaterialTheme.typography.headlineSmall)
                     Text(project.description, style = MaterialTheme.typography.bodyMedium)
                 }
-                Spacer(modifier = Modifier.height(16.dp)) // Add some spacing before buttons
+                Spacer(modifier = Modifier.height(16.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly // Spreads buttons evenly
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Button(
-                        onClick = { onDislike(project.id) },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                    ) {
-                        Text("Dislike")
-                    }
-                    Button(
-                        onClick = { onFavorite(project.id) },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onBackground)
-                    ) {
-                        Text("Favorite")
-                    }
-                    Button(
+                    CircularIconButton(
+                        icon = Icons.Default.Close,
+                        description = "Dislike",
+                        onClick = {onDislike(project.id) },
+                        buttonColor = Color.White,
+                        iconColor = Color(0xFFFF5252),
+                    )
+                    CircularIconButton(
+                        icon = Icons.Default.Star,
+                        description = "Favorite",
+                        onClick = {onFavorite(project.id) },
+                        buttonColor = Color.White,
+                        iconColor = Color(0xFF03A9F4),
+                    )
+                    CircularIconButton(
+                        icon = Icons.Default.Favorite,
+                        description = "Like",
                         onClick = { onLike(project.id) },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                    ) {
-                        Text("Like")
-                    }
+                        buttonColor = Color.White,
+                        iconColor = Color(0xFF4CAF50),
+                    )
                 }
             }
         }
 
     }
+
+@Composable
+fun CircularIconButton(
+    icon: ImageVector,
+    description: String,
+    onClick: () -> Unit,
+    buttonColor: Color,
+    iconColor: Color,
+    buttonSize: Dp = 56.dp,
+    iconSize: Dp = 32.dp
+) {
+    Button(
+        onClick = onClick,
+        shape = MaterialTheme.shapes.small.copy(all = CornerSize(50)), // Circular shape
+        colors = ButtonDefaults.buttonColors(containerColor = buttonColor), // Button background color
+        contentPadding = PaddingValues(0.dp), // Ensure proper centering
+        modifier = Modifier.size(buttonSize) // Size of the button
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = description,
+            tint = iconColor,
+            modifier = Modifier.size(iconSize)
+        )
+    }
+}
+
 

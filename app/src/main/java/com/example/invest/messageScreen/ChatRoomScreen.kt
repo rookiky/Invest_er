@@ -11,12 +11,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.invest.viewModel.ChatRoomViewModel
+import com.example.invest.viewModel.ChatRoomViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun ChatRoomScreen(chatId: String, viewModel: ChatRoomViewModel = viewModel()) {
     val messages = viewModel.messages.collectAsState().value
     var messageContent by remember { mutableStateOf("") }
+    val factory = remember { ChatRoomViewModelFactory(chatId) }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(text = chatId, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))

@@ -1,6 +1,7 @@
 package com.example.invest.viewModel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.invest.data.Message
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +36,7 @@ class ChatRoomViewModel(private val chatId: String) : ViewModel() {
         val message = Message(
             messageId = messagesRef.key ?: "",
             senderId = senderId,
-            receiverId = "", // Fetch dynamically
+            receiverId = "",
             content = content,
             timestamp = System.currentTimeMillis()
         )
@@ -45,5 +46,15 @@ class ChatRoomViewModel(private val chatId: String) : ViewModel() {
         }.addOnFailureListener {
             println("Failed to send message: ${it.message}")
         }
+    }
+}
+
+class ChatRoomViewModelFactory(private val chatId: String) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(ChatRoomViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return ChatRoomViewModel(chatId) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

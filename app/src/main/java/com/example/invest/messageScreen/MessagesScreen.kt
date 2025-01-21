@@ -36,7 +36,11 @@ fun MessagesScreen(viewModel: MessagesViewModel = viewModel(), navController: Na
                 val chatId = chatRoom.chatId
                 ChatRoomCard(
                     chatRoom = chatRoom,
-                    onClick = { navController.navigate("Chats/$chatId") }
+                    onClick = {
+                        println("chatRoom Id Card: ${chatRoom.chatId}")
+                        navController.navigate("Chats/${chatRoom.chatId}")
+
+                    }
                 )
             }
         }

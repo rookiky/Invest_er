@@ -27,7 +27,6 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun MainScreen(accountType: String) {
     val navController = rememberNavController()
-
         Scaffold(
             bottomBar = { BottomNavigationBar(navController, accountType) }
         ) { innerPadding ->
@@ -60,8 +59,9 @@ fun MainScreen(accountType: String) {
                 }
                 composable("favorites") { FavoritesScreen() }
                 composable("messages") { MessagesScreen(navController = navController) }
-                composable("messages/{chatId}") { backStackEntry ->
+                composable("chats/{chatId}") { backStackEntry ->
                     val chatId = backStackEntry.arguments?.getString("chatId") ?: ""
+                    println("ChatRoomId trying to open: $chatId")
                     ChatRoomScreen(chatId = chatId)
                 }
             }

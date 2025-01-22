@@ -175,9 +175,9 @@ fun LoginScreen(onLoginClick: (String, String) -> Unit, onRegisterClick: () -> U
                     onClick = { onLoginClick(email, password) },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.onSurface,
-
-                        ),
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
                 ) {
                     Text("Login", color = MaterialTheme.colorScheme.onBackground)
                 }

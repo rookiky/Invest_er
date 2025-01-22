@@ -192,10 +192,11 @@ fun RegistrationScreen(onRegisterClick: (String, String, String, String, String)
                         Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.onSurface,
-
-                    ),
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ),
             ) {
                 Text("Register", color = MaterialTheme.colorScheme.onBackground)
             }

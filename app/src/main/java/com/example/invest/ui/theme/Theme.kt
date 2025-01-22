@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
+    primary = Logo,
     secondary = PurpleGrey80,
     tertiary = Pink80,
     background = Black, // Set background to black
@@ -29,7 +29,8 @@ private val LightColorScheme = lightColorScheme(
     background = Color.Black, // Set background to black
     surface = Color.Black,    // Set surface to black
     onBackground = Color.White, // Text color on black background
-    onSurface = Color.White
+    onSurface = Color.White,
+    onPrimary = Logo
     /* Other default colors to override
     ,
     surface = Color(0xFFFFFBFE),

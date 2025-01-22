@@ -19,6 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun MessagesScreen(viewModel: MessagesViewModel = viewModel(), navController: NavHostController) {
     val chatRooms = viewModel.chatRooms.collectAsState().value
+    val userNames = viewModel.userNames.collectAsState().value
 
     if (chatRooms.isEmpty()) {
         Box(
@@ -35,8 +36,10 @@ fun MessagesScreen(viewModel: MessagesViewModel = viewModel(), navController: Na
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(chatRooms) { chatRoom ->
+                val userName = userNames[chatRoom.user2Id] ?: "Unknown User"
                 ChatRoomCard(
                     chatRoom = chatRoom,
+                    userName = userName,
                     onClick = {
                         println("chatRoom Id Card: ${chatRoom.chatId}")
                         navController.navigate("Chats/${chatRoom.chatId}")
@@ -48,7 +51,7 @@ fun MessagesScreen(viewModel: MessagesViewModel = viewModel(), navController: Na
 }
 
 @Composable
-fun ChatRoomCard(chatRoom: ChatRoom, onClick: () -> Unit) {
+fun ChatRoomCard(chatRoom: ChatRoom, userName: String, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -56,7 +59,7 @@ fun ChatRoomCard(chatRoom: ChatRoom, onClick: () -> Unit) {
             .padding(8.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(chatRoom.user2Id, style = MaterialTheme.typography.headlineSmall)
+            Text(userName, style = MaterialTheme.typography.headlineSmall)
             Spacer(modifier = Modifier.height(4.dp))
             Text(chatRoom.lastMessage, style = MaterialTheme.typography.bodyMedium)
         }

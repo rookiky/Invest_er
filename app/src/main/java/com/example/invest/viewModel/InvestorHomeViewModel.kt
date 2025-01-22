@@ -47,6 +47,8 @@ class InvestorHomeViewModel : ViewModel() {
             .addOnFailureListener { onFailure(it.message ?: "Failed to fetch projects") }
     }
 
+
+
     fun likeProject(projectId: String) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val database = FirebaseDatabase.getInstance()

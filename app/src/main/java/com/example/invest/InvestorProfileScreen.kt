@@ -8,26 +8,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.invest.data.InvestorProfile
+import androidx.navigation.NavHostController
 import com.example.invest.viewModel.InvestorProfileViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InvestorProfileScreen(viewModel: InvestorProfileViewModel = viewModel()) {
+fun InvestorProfileScreen(
+    viewModel: InvestorProfileViewModel = viewModel(),
+    navController: NavHostController
+) {
     val profile by viewModel.profile.collectAsState()
 
-    var name by remember { mutableStateOf(profile.name) }
-    var description by remember { mutableStateOf(profile.description) }
-    var investmentBudget by remember { mutableStateOf(profile.investmentBudget) }
-    var investmentHorizon by remember { mutableStateOf(profile.investmentHorizon) }
-    var startupStageInterest by remember { mutableStateOf(profile.startupStageInterest) }
-    var investedCompanies by remember { mutableStateOf(profile.investedCompanies.joinToString(", ")) }
+    var name by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var investmentBudget by remember { mutableStateOf("") }
+    var investmentHorizon by remember { mutableStateOf("") }
+    var startupStageInterest by remember { mutableStateOf("") }
+    var investedCompanies by remember { mutableStateOf("") }
 
     val textFieldColors = TextFieldDefaults.outlinedTextFieldColors(
         unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
         focusedTextColor = MaterialTheme.colorScheme.onBackground
     )
 
+    // Load profile values into fields when profile changes
     LaunchedEffect(profile) {
         name = profile.name
         description = profile.description
@@ -45,6 +50,7 @@ fun InvestorProfileScreen(viewModel: InvestorProfileViewModel = viewModel()) {
     ) {
         Text("Investor Profile", style = MaterialTheme.typography.headlineMedium)
 
+        // Name Field
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
@@ -53,14 +59,16 @@ fun InvestorProfileScreen(viewModel: InvestorProfileViewModel = viewModel()) {
             colors = textFieldColors
         )
 
+        // Description Field
         OutlinedTextField(
             value = description,
             onValueChange = { description = it },
             label = { Text("Description") },
             modifier = Modifier.fillMaxWidth(),
-                    colors = textFieldColors
+            colors = textFieldColors
         )
 
+        // Investment Budget Field
         OutlinedTextField(
             value = investmentBudget,
             onValueChange = { investmentBudget = it },
@@ -70,6 +78,7 @@ fun InvestorProfileScreen(viewModel: InvestorProfileViewModel = viewModel()) {
             colors = textFieldColors
         )
 
+        // Investment Horizon Field
         OutlinedTextField(
             value = investmentHorizon,
             onValueChange = { investmentHorizon = it },
@@ -78,6 +87,7 @@ fun InvestorProfileScreen(viewModel: InvestorProfileViewModel = viewModel()) {
             colors = textFieldColors
         )
 
+        // Startup Stage Interest Field
         OutlinedTextField(
             value = startupStageInterest,
             onValueChange = { startupStageInterest = it },
@@ -86,6 +96,7 @@ fun InvestorProfileScreen(viewModel: InvestorProfileViewModel = viewModel()) {
             colors = textFieldColors
         )
 
+        // Invested Companies Field
         OutlinedTextField(
             value = investedCompanies,
             onValueChange = { investedCompanies = it },
@@ -93,6 +104,7 @@ fun InvestorProfileScreen(viewModel: InvestorProfileViewModel = viewModel()) {
             modifier = Modifier.fillMaxWidth(),
             colors = textFieldColors
         )
+
 
         Button(
             onClick = {
@@ -117,9 +129,21 @@ fun InvestorProfileScreen(viewModel: InvestorProfileViewModel = viewModel()) {
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             )
-
         ) {
             Text("Save Changes")
+        }
+
+        Button(
+            onClick = {
+                FirebaseAuth.getInstance().signOut()
+                navController.navigate("login") {
+                    popUpTo("login") { inclusive = true } // Clears back stack
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+        ) {
+            Text("Disconnect")
         }
     }
 }

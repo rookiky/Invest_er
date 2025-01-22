@@ -8,5 +8,9 @@ data class Project(
     val createdAt: Long = 0L,
     val likedBy: Map<String, Boolean>? = null,
     val dislikedBy: Map<String, Boolean>? = null,
-    val favoriteBy: Map<String, Boolean>? = null
+    val favoriteBy: Map<String, Boolean>? = null,
+    val minimumInvestment: String = "",
+    val developmentPhase: String = "",
+    val partners: List<String> = emptyList(),
+    val field: String = "",
 )

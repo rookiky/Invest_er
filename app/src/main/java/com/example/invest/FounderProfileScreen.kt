@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.invest.data.Project
 import com.example.invest.viewModel.FounderProfileViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FounderProfileScreen(
     founderId: String,
@@ -20,22 +21,27 @@ fun FounderProfileScreen(
     val context = LocalContext.current
     val projects = remember { mutableStateListOf<Project>() }
 
+    val profile by viewModel.profile.collectAsState()
+
     var name by remember { mutableStateOf("") }
-    var projectDescription by remember { mutableStateOf("") }
+    var experience by remember { mutableStateOf("") }
+    var industryFocus by remember { mutableStateOf("") }
+    var linkedinProfile by remember { mutableStateOf("") }
     var profileImage by remember { mutableStateOf("") }
 
-    // Fetch founder's projects
+    val textFieldColors = TextFieldDefaults.outlinedTextFieldColors(
+        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+        focusedTextColor = MaterialTheme.colorScheme.onBackground
+    )
+
     LaunchedEffect(founderId) {
-        viewModel.fetchProjectsForFounder(
-            userId = founderId,
-            onResult = { fetchedProjects ->
-                projects.clear()
-                projects.addAll(fetchedProjects)
-            },
-            onFailure = { message ->
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            }
-        )
+        viewModel.fetchFounderProfile(founderId) { profile ->
+            name = profile.name
+            experience = profile.experience
+            industryFocus = profile.industryFocus
+            linkedinProfile = profile.linkedinProfile
+            profileImage = profile.profileImage
+        }
     }
 
     Column(
@@ -45,32 +51,64 @@ fun FounderProfileScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text("Edit Profile", style = MaterialTheme.typography.headlineMedium)
-        TextField(
+
+        OutlinedTextField(
             value = name,
             onValueChange = { name = it },
             label = { Text("Name") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = textFieldColors
         )
-        TextField(
-            value = projectDescription,
-            onValueChange = { projectDescription = it },
-            label = { Text("Project Description") },
-            modifier = Modifier.fillMaxWidth()
+
+        OutlinedTextField(
+            value = experience,
+            onValueChange = { experience = it },
+            label = { Text("Experience (years)") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = textFieldColors
         )
-        TextField(
+
+        OutlinedTextField(
+            value = industryFocus,
+            onValueChange = { industryFocus = it },
+            label = { Text("Industry Focus") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = textFieldColors
+        )
+
+        OutlinedTextField(
+            value = linkedinProfile,
+            onValueChange = { linkedinProfile = it },
+            label = { Text("LinkedIn Profile URL") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = textFieldColors
+        )
+
+        OutlinedTextField(
             value = profileImage,
             onValueChange = { profileImage = it },
             label = { Text("Profile Image URL") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = textFieldColors
         )
+
         Button(
             onClick = {
-                viewModel.saveFounderProfile(
-                    context = context,
+                val updatedProfile = profile.copy(
                     name = name,
-                    projectDescription = projectDescription,
-                    profileImage = profileImage
+                    experience = experience,
+                    industryFocus = industryFocus,
+                    linkedinProfile = linkedinProfile,
+                    profileType = "Founder"
+
                 )
+                viewModel.updateProfile(updatedProfile) { success ->
+                    if (success) {
+                        Toast.makeText(context, "Project saved successfully", Toast.LENGTH_SHORT).show()
+                    } else {
+                        println("Failed to update profile")
+                    }
+                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {

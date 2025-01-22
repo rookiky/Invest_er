@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.invest.FounderProfileScreen
 import com.example.invest.homeScreen.FounderHomeScreen
 import com.example.invest.InvestorProfileScreen
+import com.example.invest.LoginScreen
 import com.example.invest.favoriteScreen.FavoritesScreen
 
 import com.example.invest.homeScreen.InvestorHomeScreen
@@ -26,20 +27,23 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun MainScreen(accountType: String) {
     val navController = rememberNavController()
+    val userId = FirebaseAuth.getInstance().currentUser?.uid
+
         Scaffold(
             bottomBar = { BottomNavigationBar(navController, accountType) }
         ) { innerPadding ->
-            val userId = FirebaseAuth.getInstance().currentUser?.uid
+
             NavHost(
                 navController = navController,
                 startDestination = "home",
                 modifier = Modifier.padding(innerPadding)
             ) {
+
                 composable("home") {
                     if (accountType == "Founder") {
                         FounderHomeScreen()
                     } else {
-                        InvestorHomeScreen() // ViewModel is used internally
+                        InvestorHomeScreen()
                     }
                 }
                 composable("profile") {
@@ -47,7 +51,7 @@ fun MainScreen(accountType: String) {
                         if (accountType == "Founder") {
                             FounderProfileScreen(founderId = userId)
                         } else if(accountType == "Investor") {
-                            InvestorProfileScreen()
+                            InvestorProfileScreen(navController = navController)
                         }
                     }
                 }

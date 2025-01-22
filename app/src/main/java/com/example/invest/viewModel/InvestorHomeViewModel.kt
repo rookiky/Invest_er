@@ -58,8 +58,7 @@ class InvestorHomeViewModel : ViewModel() {
         likedProjectsRef.push().setValue(projectId).addOnSuccessListener {
             println("Project $projectId liked successfully.")
 
-            //Todo alert Founder
-            //alertFounder(projectId, userId)
+            notifyFounderAboutLike(projectId, userId)
 
         }.addOnFailureListener {
             println("Failed to like project: ${it.message}")
@@ -71,6 +70,8 @@ class InvestorHomeViewModel : ViewModel() {
         }.addOnFailureListener { error ->
             println("Failed to update likedBy for project $projectId: ${error.message}")
         }
+
+
 
    }
 
@@ -98,31 +99,7 @@ class InvestorHomeViewModel : ViewModel() {
         }
     }
 
-    /*private fun alertFounder(projectId: String, investorId: String) {
-        val database = FirebaseDatabase.getInstance()
 
-        val projectRef = database.getReference("Projects/$projectId")
-        projectRef.get().addOnSuccessListener { projectSnapshot ->
-            val userId = projectSnapshot.child("userId").value as? String ?: return@addOnSuccessListener
-
-            val likedByRef = database.getReference("Users/$userId/likedBy/$investorId")
-            likedByRef.setValue(true).addOnSuccessListener {
-                println(userId)
-                println("Founder $userId alerted successfully.")
-
-                sendNotificationToFounder(userId, investorId)
-            }.addOnFailureListener {
-                println("Failed to alert founder: ${it.message}")
-            }
-        }.addOnFailureListener {
-            println("Failed to fetch project details: ${it.message}")
-        }
-    }
-
-    private fun sendNotificationToFounder(founderId: String, investorId: String) {
-        println("Notification sent to Founder $founderId about Investor $investorId liking the project.")
-    }
-*/
     fun dislikeProject(projectId: String) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val database = FirebaseDatabase.getInstance()
@@ -131,9 +108,6 @@ class InvestorHomeViewModel : ViewModel() {
         val likedProjectsRef = database.getReference("Users/$userId/dislikedProjects")
         likedProjectsRef.push().setValue(projectId).addOnSuccessListener {
             println("Project $projectId Disliked successfully.")
-
-            //Todo alert Founder
-            //alertFounder(projectId, userId)
 
         }.addOnFailureListener {
             println("Failed to Dislike project: ${it.message}")
@@ -147,10 +121,35 @@ class InvestorHomeViewModel : ViewModel() {
         }
     }
 
-    private fun updateDatabaseWithDecision(projectId: String, path: String) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+    private fun notifyFounderAboutLike(projectId: String, investorId: String) {
         val database = FirebaseDatabase.getInstance()
-        val reference = database.getReference("Users/Investors/$userId/$path")
-        reference.push().setValue(projectId)
+        val projectRef = database.getReference("Projects/$projectId")
+
+        projectRef.get().addOnSuccessListener { snapshot ->
+            val founderId = snapshot.child("founderId").getValue(String::class.java)
+            if (founderId != null) {
+                val notificationRef = database.getReference("Users/$founderId/notifications").push()
+
+                val notificationData = mapOf(
+                    "title" to "New Like on Your Project!",
+                    "message" to "An investor liked your project with ID: $projectId.",
+                    "investorId" to investorId,
+                    "projectId" to projectId,
+                    "timestamp" to System.currentTimeMillis()
+                )
+
+                notificationRef.setValue(notificationData).addOnSuccessListener {
+                    println("Notification sent to founder $founderId for project $projectId.")
+                }.addOnFailureListener { error ->
+                    println("Failed to send notification to founder: ${error.message}")
+                }
+            } else {
+                println("Founder ID not found for project $projectId.")
+            }
+        }.addOnFailureListener { error ->
+            println("Failed to fetch project details for notification: ${error.message}")
+        }
     }
+
 }

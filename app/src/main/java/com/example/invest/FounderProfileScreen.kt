@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.invest.data.Project
+import com.example.invest.utils.NotificationHandler
 import com.example.invest.viewModel.FounderProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -18,6 +19,8 @@ fun FounderProfileScreen(
     founderId: String,
     viewModel: FounderProfileViewModel = viewModel()
 ) {
+
+    NotificationHandler(userId = founderId)
     val context = LocalContext.current
     val projects = remember { mutableStateListOf<Project>() }
 

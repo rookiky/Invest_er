@@ -137,53 +137,91 @@ fun ProjectCard(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
+            .fillMaxWidth()
+            .padding(12.dp),
+        elevation = CardDefaults.cardElevation(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Column(
             modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ){
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(project.name, style = MaterialTheme.typography.headlineSmall)
-                    Text(project.description, style = MaterialTheme.typography.bodyMedium)
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    CircularIconButton(
-                        icon = Icons.Default.Close,
-                        description = "Dislike",
-                        onClick = {onDislike(project.id) },
-                        buttonColor = Color.White,
-                        iconColor = Color(0xFFFF5252),
-                    )
-                    CircularIconButton(
-                        icon = Icons.Default.Star,
-                        description = "Favorite",
-                        onClick = {onFavorite(project.id) },
-                        buttonColor = Color.White,
-                        iconColor = Color(0xFF03A9F4),
-                    )
-                    CircularIconButton(
-                        icon = Icons.Default.Favorite,
-                        description = "Like",
-                        onClick = { onLike(project.id) },
-                        buttonColor = Color.White,
-                        iconColor = Color(0xFF4CAF50),
-                    )
-                }
+                .padding(16.dp)
+                .fillMaxWidth()
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceBetween // Ensures spacing between top content and bottom buttons
+        ) {
+            // Top Content: Project Title and Details
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Project Title
+                Text(
+                    text = project.name,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                // Project Details
+                DetailRow("Description:", project.description)
+                DetailRow("Phase:", project.developmentPhase)
+                DetailRow("Min Investment:", project.minimumInvestment)
+            }
+
+            // Action Buttons
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                CircularIconButton(
+                    icon = Icons.Default.Close,
+                    description = "Dislike",
+                    onClick = { onDislike(project.id) },
+                    buttonColor = Color.White,
+                    iconColor = Color(0xFFFF5252) // Red for Dislike
+                )
+                CircularIconButton(
+                    icon = Icons.Default.Star,
+                    description = "Favorite",
+                    onClick = { onFavorite(project.id) },
+                    buttonColor = Color.White,
+                    iconColor = Color(0xFF03A9F4) // Blue for Favorite
+                )
+                CircularIconButton(
+                    icon = Icons.Default.Favorite,
+                    description = "Like",
+                    onClick = { onLike(project.id) },
+                    buttonColor = Color.White,
+                    iconColor = Color(0xFF4CAF50) // Green for Like
+                )
             }
         }
-
     }
+}
+
+@Composable
+fun DetailRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+
 
 @Composable
 fun CircularIconButton(

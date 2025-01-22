@@ -36,7 +36,7 @@ class InvestorHomeViewModel : ViewModel() {
             .addOnSuccessListener { snapshot ->
                 val projects = snapshot.children.mapNotNull { data ->
                     val project = data.getValue(Project::class.java)
-                    if (project != null && project.likedBy?.containsKey(userId) != true && project.favoriteBy?.containsKey(userId) != true) {
+                    if (project != null && project.likedBy?.containsKey(userId) != true && project.favoriteBy?.containsKey(userId) != true  && project.dislikedBy?.containsKey(userId) != true) {
                         project
                     } else {
                         null
@@ -122,7 +122,27 @@ class InvestorHomeViewModel : ViewModel() {
     }
 */
     fun dislikeProject(projectId: String) {
-        updateDatabaseWithDecision(projectId, "dislikedProjects")
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val database = FirebaseDatabase.getInstance()
+
+
+        val likedProjectsRef = database.getReference("Users/$userId/dislikedProjects")
+        likedProjectsRef.push().setValue(projectId).addOnSuccessListener {
+            println("Project $projectId Disliked successfully.")
+
+            //Todo alert Founder
+            //alertFounder(projectId, userId)
+
+        }.addOnFailureListener {
+            println("Failed to Dislike project: ${it.message}")
+        }
+
+        val likedByRef = database.getReference("Projects/$projectId/dislikedBy")
+        likedByRef.child(userId).setValue(true).addOnSuccessListener {
+            println("Project $projectId liked successfully by $userId.")
+        }.addOnFailureListener { error ->
+            println("Failed to update likedBy for project $projectId: ${error.message}")
+        }
     }
 
     private fun updateDatabaseWithDecision(projectId: String, path: String) {

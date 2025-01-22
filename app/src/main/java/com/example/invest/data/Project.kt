@@ -7,5 +7,6 @@ data class Project(
     val founderId: String = "",
     val createdAt: Long = 0L,
     val likedBy: Map<String, Boolean>? = null,
+    val dislikedBy: Map<String, Boolean>? = null,
     val favoriteBy: Map<String, Boolean>? = null
 )

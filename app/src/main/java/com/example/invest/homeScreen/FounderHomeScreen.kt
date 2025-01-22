@@ -3,10 +3,15 @@ package com.example.invest.homeScreen
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -39,12 +44,20 @@ fun FounderHomeScreen(viewModel: FounderHomeViewModel = viewModel()) {
             },
             onSwipeRight = {
                 viewModel.likeInvestor(currentInvestor.id) { chatRoomId ->
-                    println("current investor: $currentInvestor")
-                    println("currentInvestorId: ${currentInvestor.id}")
                     println("Chat room created with ID: $chatRoomId")
                 }
                 currentIndex++
+            },
+            onLike = {
+                    investorId -> viewModel.likeInvestor(currentInvestor.id)  { chatRoomId ->
+                println("Chat room created with ID: $chatRoomId")
             }
+                currentIndex++ },
+            onDislike = {
+                    investorId -> viewModel.rejectInvestor(currentInvestor.id)
+                currentIndex++
+            }
+
         )
     }
 }
@@ -53,7 +66,9 @@ fun FounderHomeScreen(viewModel: FounderHomeViewModel = viewModel()) {
 fun SwipeableInvestorCard(
     investor: InvestorProfile,
     onSwipeLeft: () -> Unit,
-    onSwipeRight: () -> Unit
+    onSwipeRight: () -> Unit,
+    onLike: (String) -> Unit,
+    onDislike: (String) -> Unit
 ) {
     val offsetX = remember { Animatable(0f) } // For swipe animation
     val swipeThreshold = 300f // Threshold for swipe actions
@@ -91,27 +106,57 @@ fun SwipeableInvestorCard(
             .offset { IntOffset(offsetX.value.toInt(), 0) }, // Move card horizontally
         contentAlignment = Alignment.Center // Center the card
     ) {
-        InvestorCard(investor = investor)
+        InvestorCard(
+            investor = investor,
+            onLike = { onLike(investor.id) },
+            onDislike = { onDislike(investor.id) }
+        )
     }
+
 }
 
 @Composable
-fun InvestorCard(investor: InvestorProfile) {
+fun InvestorCard(
+    investor: InvestorProfile,
+    onLike: (String) -> Unit,
+    onDislike: (String) -> Unit) {
     Card(
         modifier = Modifier
-            .fillMaxSize() // Makes the card take up the full height and width
+            .fillMaxSize()
             .padding(16.dp)
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize() // Ensures content within the card fills the space
+                .fillMaxSize()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.Center, // Centers content vertically
-            horizontalAlignment = Alignment.CenterHorizontally // Centers content horizontally
+            verticalArrangement = Arrangement.SpaceBetween,
+
         ) {
             Text("Name: ${investor.name}", style = MaterialTheme.typography.headlineSmall)
             Text("Interests: ${investor.description}", style = MaterialTheme.typography.bodyMedium)
             Text("Budget: ${investor.investmentBudget}", style = MaterialTheme.typography.bodyMedium)
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                CircularIconButton(
+                    icon = Icons.Default.Close,
+                    description = "Dislike",
+                    onClick = {onDislike(investor.id)},
+                    buttonColor = Color.White,
+                    iconColor = Color(0xFFFF5252),
+                )
+                CircularIconButton(
+                    icon = Icons.Default.Favorite,
+                    description = "Like",
+                    onClick = { onLike(investor.id) },
+                    buttonColor = Color.White,
+                    iconColor = Color(0xFF4CAF50),
+                )
+            }
         }
+
     }
 }
